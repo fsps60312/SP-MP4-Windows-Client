@@ -346,11 +346,12 @@ namespace SP_MP4_client
                                 {
                                     Msg("成功匹配");
                                     var partner = JsonConvert.DeserializeObject<Json.Matched>(msg);
-                                    SetState(StateEnum.Chatting);
+                                    TXBchat.AppendText($"對方資訊：\r\n");
                                     TXBchat.AppendText($"暱稱：{partner.name}\r\n");
                                     TXBchat.AppendText($"年齡：{partner.age}\r\n");
                                     TXBchat.AppendText($"性別：{partner.gender}\r\n");
                                     TXBchat.AppendText($"自介：{partner.introduction}\r\n");
+                                    SetState(StateEnum.Chatting);
                                 }
                             }
                             while(State==StateEnum.Chatting)
@@ -410,6 +411,7 @@ namespace SP_MP4_client
                     break;
             }
         }
+        public void Start() { TXBinput.Text = "/c\r\n"; }
     }
     public class AboutPage:MyTabPage
     {
@@ -481,6 +483,7 @@ namespace SP_MP4_client
         void Log(string msg) { TPlog.Log(msg); }
         public Form1()
         {
+            this.Text = "SP MP4";
             this.Size = new Size(1000, 700);
             {
                 TCmain = new MyTabControl();
@@ -503,6 +506,12 @@ namespace SP_MP4_client
             }
             this.FormClosing += Form1_FormClosing;
             Log("初始化完成！");
+            this.Shown += Form1_Shown;
+        }
+
+        private void Form1_Shown(object sender, EventArgs e)
+        {
+            TPmsg.Start();
         }
 
         private void Form1_FormClosing(object sender, FormClosingEventArgs e)
