@@ -347,10 +347,10 @@ namespace SP_MP4_client
                                     Msg("成功匹配");
                                     var partner = JsonConvert.DeserializeObject<Json.Matched>(msg);
                                     SetState(StateEnum.Chatting);
-                                    Msg($"暱稱：{partner.name}");
-                                    Msg($"年齡：{partner.age}");
-                                    Msg($"性別：{partner.gender}");
-                                    Msg($"自介：{partner.introduction}");
+                                    TXBchat.AppendText($"暱稱：{partner.name}\r\n");
+                                    TXBchat.AppendText($"年齡：{partner.age}\r\n");
+                                    TXBchat.AppendText($"性別：{partner.gender}\r\n");
+                                    TXBchat.AppendText($"自介：{partner.introduction}\r\n");
                                 }
                             }
                             while(State==StateEnum.Chatting)
@@ -411,6 +411,13 @@ namespace SP_MP4_client
             }
         }
     }
+    public class AboutPage:MyTabPage
+    {
+        public AboutPage():base("這爛程式是誰做的？")
+        {
+            this.Controls.Add(new MyTextBox(true, "↓跟這些有關哦～↓\r\nfsps60312\r\nhttps://codingsimplifylife.blogspot.tw/\r\nhttps://www.facebook.com/CodingSimplifyLife/\r\n\r\n歡迎來玩Code風景區的Chatbot，玩法是私訊粉專！>///<\r\n\r\n此程式源自於我們系統程式設計的某一次作業，詳情請看：\r\nhttps://systemprogrammingatntu.github.io/MP4"));
+        }
+    }
     public class InfoPage:MyTabPage
     {
         public class TextPage:MyTabPage
@@ -431,15 +438,16 @@ namespace SP_MP4_client
         {
             {
                 TCmain = new MyTabControl();
-                TCmain.TabPages.Add(name = new TextPage("暱稱","loser"));
-                TCmain.TabPages.Add(age = new TextPage("年齡","23"));
-                TCmain.TabPages.Add(gender = new TextPage("性別","male"));
-                TCmain.TabPages.Add(introduction = new TextPage("自介","I get hurt a lot in that chatroom war..."));
-                TCmain.TabPages.Add(filter_function = new TextPage("篩選函式","int filter_function(struct User user)\r\n" +
+                TCmain.TabPages.Add(name = new TextPage("暱稱 (name)","loser"));
+                TCmain.TabPages.Add(age = new TextPage("年齡 (age)","23"));
+                TCmain.TabPages.Add(gender = new TextPage("性別 (gender)","male"));
+                TCmain.TabPages.Add(introduction = new TextPage("自介 (introduction)","I get hurt a lot in that chatroom war..."));
+                TCmain.TabPages.Add(filter_function = new TextPage("篩選函式 (filter_function)","int filter_function(struct User user)\r\n" +
                     "{\r\n" +
                     "    return 1;\r\n" +
                     "}\r\n" +
-                    "/*struct User {\r\n" +
+                    "/*(這是C，不是C++)\r\n" +
+                    "struct User {\r\n" +
                     "    char name[33],\r\n" +
                     "    unsigned int age,\r\n" +
                     "    char gender[7],\r\n" +
@@ -487,6 +495,9 @@ namespace SP_MP4_client
                 }
                 {
                     TCmain.TabPages.Add(TPlog);
+                }
+                {
+                    TCmain.TabPages.Add(new AboutPage());
                 }
                 this.Controls.Add(TCmain);
             }
