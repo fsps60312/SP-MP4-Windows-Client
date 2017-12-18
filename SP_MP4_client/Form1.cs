@@ -207,6 +207,7 @@ namespace SP_MP4_client
             }
             else
             {
+                text = Encode(text);
                 var msg = JsonConvert.SerializeObject(new Json.SendMessage
                 {
                     message = text,
@@ -218,11 +219,34 @@ namespace SP_MP4_client
                     while ((msg = manager.Receive()) == null) Application.DoEvents();
                     Trace.Assert(JsonConvert.DeserializeObject<Json.SendMessage>(msg).message == text);
                     Log($"你傳了：{text}");
-                    TXBchat.AppendText($"你傳了：{text}\r\n");
+                    TXBchat.AppendText($"你傳了：{Decode(text)}\r\n");
                 }
             }
         }
-
+        string Encode(string s)
+        {
+            string ans = "";
+            char[] data = s.ToCharArray();
+            for (int i = 0; i < data.Length; i++)
+            {
+                byte[] bytes = Encoding.Unicode.GetBytes(data[i].ToString());
+                ans += @"\u" + bytes[1].ToString("X2") + bytes[0].ToString("X2");
+            }
+            return ans;
+        }
+        string Decode(string s)
+        {
+            Trace.Assert(s.Length % 6 == 0);
+            if (s.Length == 0) return "";
+            var data = s.Substring(1).Split('\\').Select(v=>v.Substring(1));
+            string ans = "";
+            foreach (string d in data) ans += Encoding.Unicode.GetString(new byte[2]
+             {
+                (byte) int.Parse(d.Substring(2,2),System.Globalization.NumberStyles.HexNumber),
+                (byte) int.Parse(d.Substring(0,2),System.Globalization.NumberStyles.HexNumber)
+             });
+            return ans;
+        }
         void Log(string msg)
         {
             log.Log(msg);
@@ -369,7 +393,7 @@ namespace SP_MP4_client
                                     else
                                     {
                                         Log($"對方回覆：{msgObj.message}");
-                                        TXBchat.AppendText($"對方回覆：{msgObj.message}\r\n");
+                                        TXBchat.AppendText($"對方回覆：{Decode(msgObj.message)}\r\n");
                                     }
                                 }
                             }
@@ -417,7 +441,7 @@ namespace SP_MP4_client
     {
         public AboutPage():base("這爛程式是誰做的？")
         {
-            this.Controls.Add(new MyTextBox(true, "↓跟這些有關哦～↓\r\nfsps60312\r\nhttps://codingsimplifylife.blogspot.tw/\r\nhttps://www.facebook.com/CodingSimplifyLife/\r\n\r\n歡迎來玩Code風景區的Chatbot，玩法是私訊粉專！>///<\r\n\r\n此程式源自於我們系統程式設計的某一次作業，詳情請看：\r\nhttps://systemprogrammingatntu.github.io/MP4"));
+            this.Controls.Add(new MyTextBox(true, "↓跟這些有關哦～↓\r\nfsps60312\r\nhttps://codingsimplifylife.blogspot.tw/\r\nhttps://www.facebook.com/CodingSimplifyLife/\r\n\r\n歡迎來玩Code風景區的Chatbot，玩法是私訊粉專！>///<\r\n\r\n此程式源自於我們系統程式設計的某一次作業，詳情請看：\r\nhttps://systemprogrammingatntu.github.io/MP4\r\n\r\n此程式已開源：\r\nhttps://github.com/fsps60312/SP-MP4-Windows-Client"));
         }
     }
     public class InfoPage:MyTabPage
@@ -446,9 +470,10 @@ namespace SP_MP4_client
                 TCmain.TabPages.Add(introduction = new TextPage("自介 (introduction)","I get hurt a lot in that chatroom war..."));
                 TCmain.TabPages.Add(filter_function = new TextPage("篩選函式 (filter_function)","int filter_function(struct User user)\r\n" +
                     "{\r\n" +
+                    "    if(user.age<18 || user.age>25) return 0;//這樣可以篩掉不是大學年紀的人\r\n" +
                     "    return 1;\r\n" +
                     "}\r\n" +
-                    "/*(這是C，不是C++)\r\n" +
+                    "/*(修改上面這個函式來篩選欲匹配的對象，下面是User的定義。程式語言：C(不是C++))\r\n" +
                     "struct User {\r\n" +
                     "    char name[33],\r\n" +
                     "    unsigned int age,\r\n" +
@@ -483,7 +508,8 @@ namespace SP_MP4_client
         void Log(string msg) { TPlog.Log(msg); }
         public Form1()
         {
-            this.Text = "SP MP4";
+            this.Text = "NTU WooTalk";
+            this.Icon = Properties.Resources.clock_reveal_00095_600;
             this.Size = new Size(1000, 700);
             {
                 TCmain = new MyTabControl();

@@ -59,5 +59,15 @@ namespace SP_MP4_client.Properties {
                 resourceCulture = value;
             }
         }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Icon similar to (Icon).
+        /// </summary>
+        internal static System.Drawing.Icon clock_reveal_00095_600 {
+            get {
+                object obj = ResourceManager.GetObject("clock_reveal_00095_600", resourceCulture);
+                return ((System.Drawing.Icon)(obj));
+            }
+        }
     }
 }
